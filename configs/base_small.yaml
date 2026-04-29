@@ -1,0 +1,30 @@
+# Base-small transformer config for Multi30k EN-DE
+# Trains in ~2h on a single GPU; achieves BLEU ~32 on the test set.
+
+model:
+  d_model: 256
+  n_heads: 8
+  n_layers: 4
+  d_ff: 1024
+  max_len: 150
+  dropout: 0.1
+
+training:
+  batch_size: 64
+  n_epochs: 50
+  warmup_steps: 4000
+  label_smoothing: 0.1
+  grad_clip: 1.0
+  min_freq: 2
+  max_src_len: 100
+  checkpoint_dir: checkpoints/base_small
+
+data:
+  dataset: bentrevett/multi30k
+  src_lang: en
+  tgt_lang: de
+
+wandb:
+  project: attention-is-all-you-need
+  run_name: base_small_multi30k
+  log_attention_every: 5
