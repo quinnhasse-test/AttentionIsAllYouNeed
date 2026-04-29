@@ -1,27 +1,40 @@
 """Position-wise feed-forward sublayer from Vaswani et al. (2017).
 
-FFN(x) = max(0, x W_1 + b_1) W_2 + b_2
+FFN(x) = activation(x W_1 + b_1) W_2 + b_2
 
-The same two-layer network is applied independently to each position.
-In the base model: d_model=512, d_ff=2048.
+The original paper uses ReLU.  GELU is commonly used in more recent
+transformer variants (BERT, GPT) and tends to train slightly better.
 """
 
 import torch
 import torch.nn as nn
+from typing import Literal
 
 
 class PositionWiseFeedForward(nn.Module):
-    """Two-layer point-wise feed-forward network with ReLU activation.
+    """Two-layer point-wise feed-forward network.
 
-    Applied identically at each sequence position; no interaction across
-    positions here (that is the role of attention).
+    Applied identically at each sequence position.
+
+    Args:
+        d_model:    Input and output dimensionality.
+        d_ff:       Hidden dimensionality (typically 4 * d_model).
+        dropout:    Dropout applied after the activation.
+        activation: "relu" (default) or "gelu".
     """
 
-    def __init__(self, d_model: int, d_ff: int, dropout: float = 0.1) -> None:
+    def __init__(
+        self,
+        d_model: int,
+        d_ff: int,
+        dropout: float = 0.1,
+        activation: Literal["relu", "gelu"] = "relu",
+    ) -> None:
         super().__init__()
+        act: nn.Module = nn.ReLU() if activation == "relu" else nn.GELU()
         self.net = nn.Sequential(
             nn.Linear(d_model, d_ff),
-            nn.ReLU(),
+            act,
             nn.Dropout(dropout),
             nn.Linear(d_ff, d_model),
         )
