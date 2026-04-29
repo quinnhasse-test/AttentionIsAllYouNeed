@@ -6,6 +6,7 @@ Useful for inspecting what source positions a decoder token attends to.
 
 from __future__ import annotations
 
+import math
 import numpy as np
 import matplotlib
 matplotlib.use("Agg")
@@ -92,7 +93,6 @@ def plot_all_heads(
         )
         axes[h].set_title(f"Head {h}", fontsize=9)
 
-    # Hide unused axes
     for h in range(n_heads, len(axes)):
         axes[h].set_visible(False)
 
@@ -100,6 +100,3 @@ def plot_all_heads(
         fig.suptitle(title, fontsize=11)
     fig.tight_layout()
     return fig
-
-
-import math  # noqa: E402 — placed here to avoid circular-import confusion
